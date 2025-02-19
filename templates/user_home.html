@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 5px;
+            min-height: 100vh;
+        }
+        .header {
+            display: inline-flex;
+		    text-align: center;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #192841;
+		    color: #fff;
+            padding: 10px 20px;
+        }
+        .logo {
+            height: 80px;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .header img {
+        	height: 80px;
+        }
+        .footer {
+            background-color: #808080;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+		    margin-top: auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            text-align: center;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #b7b5b5;
+        }
+        th {
+            background-color: #54585e;
+            color: white;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 0;
+        }
+        h3 {
+            margin-top: 10px;
+        }
+        a {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            text-decoration: none;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        a:hover {
+            background-color: #0069d9;
+        }
+        .container {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            margin-top: 20px;
+        }
+        figure {
+            display: inline-flex;
+            flex-direction: column;
+            padding: 0%;
+            margin: 0%;
+        }
+    </style>
+</head>
+<body>                
+    <div class="header">
+        <img src="{{ url_for('static', filename='TicketShow_logo.png') }}" alt="Logo">
+        <div class="container">
+            <div>
+                <a href="/user/issue_record/{{user.Memb_id}}">My Books</a>
+                <a href="/user">Home</a>
+                <a href="/logout">Logout</a>
+                <figure>
+                    <img src="{{ url_for('static', filename='Default_pfp.png') }}" alt="pfp" style="height: 50px;">
+                    <figcaption style="color: yellow;">{{user.Username}}</figcaption>
+                </figure>
+            </div>
+        </div>
+    </div>
+    {% if books|length == 0%}
+        <h1>No books found!</h1>
+    {% else %}
+        <h1>Book List</h1>
+        <h3>List of all the books available in the Library</h3>
+        {% if err01 %}
+            <h3 style="color: red;">Sorry! The book is not available</h3>
+        {% endif %}
+        {% if err02 %}
+            <h3 style="color: red;">Book already borrowed! Check the details in the My Books tab.</h3>
+        {% endif %}
+        {% if msg01 %}
+            <h3 style="color: green;">Book borrowed successfully! Check the return date in the My Books tab.</h3>
+        {% endif %}
+        <table>
+            <tr>
+                <th>Book Id</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Price</th>
+                <th>Availability</th>
+                <th>Actions</th>
+            </tr>
+            {% for book in books %}
+                <tr>
+                    <td>{{ book.Book_id }}</td>
+                    <td>{{ book.Title }}</td>
+                    <td>{{ book.Author }}</td>
+                    <td>{{ book.Genre }}</td>
+                    <td>{{ book.Price }}</td>
+                    <td>{{ book.Availability }}</td>
+                    <td>
+                        <a href="/user/borrow/{{ book.Book_id }}" id="borrow">Borrow</a>
+                        <script>
+                            document.getElementById('borrow').addEventListener('click', function(e) {
+                                var confirmed = confirm('Are you sure you want to borrow {{ book.Title }}?');
+                                if (!confirmed) {
+                                    e.preventDefault(); // Prevent the default action (following the link)
+                                    window.location.href = '/user'; // Redirect to another page when canceled
+                                }
+                            });
+                        </script>  
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+<div class="footer">
+    &copy; 2023 TMU Library. All rights reserved.
+</div>
+</html>
